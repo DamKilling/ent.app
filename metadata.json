@@ -1,0 +1,7 @@
+{
+  "name": "Pet Memorial Services",
+  "description": "A compassionate one-stop service platform for pet owners, providing professional, transparent, and convenient memorial services and emotional support. We help cherish memories and offer a warm community for healing.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
