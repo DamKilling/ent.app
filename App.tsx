@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Page, Post, Comment, Product, Memorial } from './types';
 import Header from './BottomNav';
@@ -6,7 +5,7 @@ import {
   CalendarIcon, PawIcon, LocationPinIcon, HeartIcon, InfoIcon, UsersIcon, CheckCircleIcon, DiamondIcon, UrnIcon, CandleIcon,
   ShoppingCartIcon, SearchIcon, PlusIcon, ChevronRightIcon, CreditCardIcon, ClockIcon, RefreshCwIcon, StoreIcon, FileTextIcon,
   BriefcaseIcon, BellIcon, SettingsIcon, GridIcon, LogOutIcon, ImageIcon, XIcon, TagIcon, SparklesIcon, EllipsisHorizontalIcon,
-  ArrowLeftIcon, MessageCircleIcon, ShareIcon, SendIcon, HomeIcon
+  ArrowLeftIcon, MessageCircleIcon, ShareIcon, SendIcon, HomeIcon, TrashIcon
 } from './Icons';
 
 // Page Components defined in the same file to keep file count low.
@@ -69,7 +68,7 @@ const HomePage: React.FC<{ setActivePage: (page: Page) => void }> = ({ setActive
   return (
     <div>
       <div className="p-6 md:p-10 bg-gradient-to-b from-purple-200 via-fuchsia-100 to-transparent rounded-lg">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Pet Memorial Services</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Petner</h1>
         <p className="text-gray-500 mt-2">Honoring the unconditional love they gave us</p>
       </div>
 
@@ -146,30 +145,37 @@ const HomePage: React.FC<{ setActivePage: (page: Page) => void }> = ({ setActive
   );
 };
 
-const ServicesPage: React.FC = () => {
+const ServicesPage: React.FC<{
+    setActivePage: (page: Page, data?: any) => void;
+}> = ({ setActivePage }) => {
     const services = [
         {
+            id: 101,
             title: "Basic Farewell",
-            price: "120",
+            price: 120,
             petSize: "For small pets",
             features: ["Individual cremation service", "Urn bag included", "Memorial certificate", "24-hour pickup service", "Basic farewell ceremony"],
             popular: false
         },
         {
+            id: 102,
             title: "Premium Memorial",
-            price: "280",
+            price: 280,
             petSize: "For small to medium pets",
             features: ["Individual cremation service", "Premium urn", "Memorial certificate & photo", "24-hour pickup service", "Warm farewell ceremony", "Fur keepsake creation", "Online memorial space"],
             popular: true
         },
         {
+            id: 103,
             title: "Eternal Tribute",
-            price: "580",
+            price: 580,
             petSize: "For small, medium & large pets",
             features: ["VIP cremation service", "Premium custom urn", "Professional photo album", "24-hour dedicated pickup", "Private farewell ceremony", "Multiple fur keepsakes", "Permanent online memorial", "Bone & diamond customization", "Grief counseling support"],
             popular: false
         }
     ];
+
+    const [selectedService, setSelectedService] = React.useState('Premium Memorial');
 
     return (
         <div>
@@ -177,28 +183,49 @@ const ServicesPage: React.FC = () => {
                 <h1 className="text-3xl font-bold text-gray-800">Pet Funeral Services</h1>
                 <p className="text-gray-500 mt-2 max-w-lg mx-auto">With love and respect, giving your beloved companion their final journey</p>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
-                {services.map(service => (
-                    <div key={service.title} className={`bg-white p-6 rounded-2xl shadow-lg relative flex flex-col ${service.popular ? 'border-2 border-purple-400' : ''}`}>
-                        {service.popular && <span className="absolute top-0 -mt-3 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full">Most Popular</span>}
-                        <div className="text-center">
-                            <h2 className="text-xl font-bold text-gray-800">{service.title}</h2>
-                            <p className="text-sm text-gray-500 mt-1">{service.petSize}</p>
-                            <p className="text-4xl font-bold text-purple-600 my-2">${service.price} <span className="text-lg font-normal text-gray-500">from</span></p>
+                {services.map(service => {
+                    const isSelected = selectedService === service.title;
+                    return (
+                        <div 
+                            key={service.title} 
+                            onClick={() => setSelectedService(service.title)}
+                            className={`bg-white p-6 rounded-2xl shadow-lg relative flex flex-col cursor-pointer transition-all duration-300 ${
+                                isSelected ? 'border-2 border-purple-500 ring-2 ring-purple-200' : 
+                                service.popular ? 'border-2 border-purple-400' : 'border-2 border-transparent'
+                            }`}
+                        >
+                            {service.popular && !isSelected && <span className="absolute top-0 -mt-3 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full">Most Popular</span>}
+                            {isSelected && <span className="absolute top-0 -mt-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full">Selected</span>}
+
+                            <div className="text-center">
+                                <h2 className="text-xl font-bold text-gray-800">{service.title}</h2>
+                                <p className="text-sm text-gray-500 mt-1">{service.petSize}</p>
+                                <p className="text-4xl font-bold text-purple-600 my-2">${service.price} <span className="text-lg font-normal text-gray-500">from</span></p>
+                            </div>
+                            <ul className="space-y-3 mt-4 flex-grow">
+                                {service.features.map(feature => (
+                                    <li key={feature} className="flex items-center text-gray-600">
+                                        <CheckCircleIcon className="w-5 h-5 text-purple-500 mr-3 flex-shrink-0"/>
+                                        <span>{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation(); // prevent card's onClick
+                                    setActivePage('ServiceDetail', { service });
+                                }}
+                                className={`w-full mt-6 py-3 rounded-xl font-semibold text-center transition-colors ${
+                                    (isSelected || service.popular) ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                            >
+                                {isSelected ? 'Customize Service' : 'Select This Service'}
+                            </button>
                         </div>
-                        <ul className="space-y-3 mt-4 flex-grow">
-                            {service.features.map(feature => (
-                                <li key={feature} className="flex items-center text-gray-600">
-                                    <CheckCircleIcon className="w-5 h-5 text-purple-500 mr-3 flex-shrink-0"/>
-                                    <span>{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button className={`w-full mt-6 py-3 rounded-xl font-semibold text-center ${service.popular ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                            Select This Service
-                        </button>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
             
             <div className="mt-12">
@@ -215,14 +242,210 @@ const ServicesPage: React.FC = () => {
     );
 };
 
+const ServiceDetailPage: React.FC<{
+  service: { id: number; title: string; price: number; features: string[] };
+  onAddToCart: (product: Product) => void;
+  onBack: () => void;
+}> = ({ service, onAddToCart, onBack }) => {
+  const urnOptions = [
+    { name: 'Standard Urn', price: 0, desc: 'A simple and elegant ceramic urn.' },
+    { name: 'Premium Wooden Urn', price: 50, desc: 'Crafted from solid oak with a fine finish.' },
+    { name: 'Engraved Photo Urn', price: 80, desc: 'Personalize with your favorite photo.' },
+  ];
+  const keepsakeOptions = [
+    { name: 'Fur Keepsake', price: 0, desc: 'A small vial containing a lock of fur.' },
+    { name: 'Clay Paw Print', price: 30, desc: 'A lasting impression of your pet\'s paw.' },
+  ];
+  
+  const [selectedUrn, setSelectedUrn] = React.useState(urnOptions[0]);
+  const [selectedKeepsake, setSelectedKeepsake] = React.useState(keepsakeOptions[0]);
+
+  if (!service) {
+      return (
+        <div className="text-center p-8">
+            <p>Service details not found.</p>
+            <button onClick={onBack} className="mt-4 text-purple-600 font-semibold">Go Back</button>
+        </div>
+      );
+  }
+
+  const finalPrice = service.price + selectedUrn.price + selectedKeepsake.price;
+
+  const handleAddToCart = () => {
+    const customizedProduct: Product = {
+      id: service.id,
+      icon: <CalendarIcon className="w-8 h-8 text-purple-500" />,
+      name: `${service.title}`,
+      desc: `Urn: ${selectedUrn.name}, Keepsake: ${selectedKeepsake.name}`,
+      price: finalPrice,
+      tag: 'Service',
+      tagColor: 'bg-purple-100 text-purple-600',
+    };
+    onAddToCart(customizedProduct);
+  };
+  
+  return (
+    <div className="max-w-4xl mx-auto">
+      <header className="mb-6">
+          <button onClick={onBack} className="flex items-center text-gray-600 hover:text-gray-900 font-semibold">
+              <ArrowLeftIcon className="w-5 h-5 mr-2" />
+              Back to Services
+          </button>
+          <h1 className="text-4xl font-bold text-gray-800 mt-4">{service.title}</h1>
+          <p className="text-gray-500 mt-2">Customize the farewell service for your beloved companion.</p>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+              {/* Urn Options */}
+              <div className="bg-white p-6 rounded-2xl shadow-md">
+                  <h2 className="text-xl font-bold mb-4">Urn Selection</h2>
+                  <div className="space-y-3">
+                      {urnOptions.map(option => (
+                          <div key={option.name} onClick={() => setSelectedUrn(option)}
+                               className={`p-4 border rounded-lg cursor-pointer flex justify-between items-center transition-all ${selectedUrn.name === option.name ? 'border-purple-500 ring-2 ring-purple-200' : 'border-gray-200'}`}>
+                               <div>
+                                  <h3 className="font-semibold">{option.name}</h3>
+                                  <p className="text-sm text-gray-500">{option.desc}</p>
+                                </div>
+                               <span className="font-semibold text-gray-700 ml-4 whitespace-nowrap">
+                                  {option.price > 0 ? `+$${option.price}` : 'Included'}
+                               </span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+
+              {/* Keepsake Options */}
+              <div className="bg-white p-6 rounded-2xl shadow-md">
+                  <h2 className="text-xl font-bold mb-4">Keepsake Options</h2>
+                   <div className="space-y-3">
+                      {keepsakeOptions.map(option => (
+                          <div key={option.name} onClick={() => setSelectedKeepsake(option)}
+                               className={`p-4 border rounded-lg cursor-pointer flex justify-between items-center transition-all ${selectedKeepsake.name === option.name ? 'border-purple-500 ring-2 ring-purple-200' : 'border-gray-200'}`}>
+                               <div>
+                                  <h3 className="font-semibold">{option.name}</h3>
+                                  <p className="text-sm text-gray-500">{option.desc}</p>
+                                </div>
+                               <span className="font-semibold text-gray-700 ml-4 whitespace-nowrap">
+                                  {option.price > 0 ? `+$${option.price}` : 'Included'}
+                               </span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+          </div>
+          
+          <div className="lg:col-span-1">
+              <div className="bg-white p-6 rounded-2xl shadow-md sticky top-24">
+                  <h2 className="text-xl font-bold mb-4 border-b pb-3">Service Summary</h2>
+                  <div className="space-y-2 text-gray-600">
+                      <div className="flex justify-between"><span>Base Service:</span> <strong>{service.title}</strong></div>
+                      <div className="flex justify-between"><span>Base Price:</span> <strong>${service.price.toFixed(2)}</strong></div>
+                      <div className="flex justify-between"><span>Urn:</span> <strong>{selectedUrn.name}</strong></div>
+                      <div className="flex justify-between"><span>Keepsake:</span> <strong>{selectedKeepsake.name}</strong></div>
+                  </div>
+                  <div className="border-t mt-4 pt-4">
+                      <div className="flex justify-between items-center font-bold text-2xl text-gray-800">
+                          <span>Total</span>
+                          <span>${finalPrice.toFixed(2)}</span>
+                      </div>
+                      <button 
+                          onClick={handleAddToCart}
+                          className="w-full mt-4 bg-purple-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all flex items-center justify-center">
+                          <ShoppingCartIcon className="w-5 h-5 mr-2" />
+                          Add to Cart
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  );
+};
+
+const CartSidebar: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    cart: Product[];
+    onRemoveFromCart: (index: number) => void;
+}> = ({ isOpen, onClose, cart, onRemoveFromCart }) => {
+    const [paymentMethod, setPaymentMethod] = React.useState('card');
+    const cartTotal = cart.reduce((total, item) => total + item.price, 0);
+
+    return (
+        <>
+            {isOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} aria-hidden="true"></div>
+            )}
+            <div 
+                className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="cart-heading"
+            >
+                <div className="flex flex-col h-full">
+                    <div className="flex justify-between items-center p-4 border-b">
+                        <h2 id="cart-heading" className="text-xl font-bold">Your Cart</h2>
+                        <button onClick={onClose} aria-label="Close cart">
+                            <XIcon className="w-6 h-6 text-gray-500" />
+                        </button>
+                    </div>
+                    {cart.length === 0 ? (
+                        <p className="text-gray-500 text-center py-8 flex-grow flex items-center justify-center">Your cart is empty.</p>
+                    ) : (
+                        <div className="p-4 space-y-3 flex-grow overflow-y-auto">
+                            {cart.map((item, index) => (
+                                <div key={`${item.id}-${index}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex-grow">
+                                        <p className="font-semibold text-gray-800">{item.name}</p>
+                                        <p className="text-xs text-gray-500 line-clamp-1">{item.desc}</p>
+                                        <p className="text-sm font-bold text-purple-600 mt-1">${item.price.toFixed(2)}</p>
+                                    </div>
+                                    <button onClick={() => onRemoveFromCart(index)} className="p-2 text-gray-400 hover:text-red-500 transition-colors" aria-label={`Remove ${item.name} from cart`}>
+                                        <TrashIcon className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {cart.length > 0 && (
+                        <div className="p-6 border-t bg-gray-50">
+                            <div className="mb-6">
+                                <h3 className="font-semibold text-gray-700 mb-3">Payment Method</h3>
+                                <div className="space-y-2">
+                                    <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'card' ? 'border-purple-500 bg-white ring-1 ring-purple-500' : 'bg-white border-gray-200'}`}>
+                                        <input type="radio" name="payment" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="text-purple-600 focus:ring-purple-500" />
+                                        <span className="ml-3 font-medium text-gray-700 flex items-center"><CreditCardIcon className="w-5 h-5 mr-2 text-gray-500"/> Credit Card</span>
+                                    </label>
+                                    <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'paypal' ? 'border-purple-500 bg-white ring-1 ring-purple-500' : 'bg-white border-gray-200'}`}>
+                                        <input type="radio" name="payment" value="paypal" checked={paymentMethod === 'paypal'} onChange={() => setPaymentMethod('paypal')} className="text-purple-600 focus:ring-purple-500" />
+                                        <span className="ml-3 font-medium text-gray-700">PayPal</span>
+                                    </label>
+                                    <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'apple' ? 'border-purple-500 bg-white ring-1 ring-purple-500' : 'bg-white border-gray-200'}`}>
+                                        <input type="radio" name="payment" value="apple" checked={paymentMethod === 'apple'} onChange={() => setPaymentMethod('apple')} className="text-purple-600 focus:ring-purple-500" />
+                                        <span className="ml-3 font-medium text-gray-700">Apple Pay</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center font-bold text-xl text-gray-800 mb-4">
+                                <span>Total</span>
+                                <span>${cartTotal.toFixed(2)}</span>
+                            </div>
+                            <button className="w-full bg-purple-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all">
+                                Checkout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </>
+    );
+};
 
 const ShopPage: React.FC<{
     onAddToCart: (product: Product) => void;
-    cart: Product[];
-    isCartOpen: boolean;
-    setIsCartOpen: (isOpen: boolean) => void;
-}> = ({ onAddToCart, cart, isCartOpen, setIsCartOpen }) => {
-    
+}> = ({ onAddToCart }) => {
     const products: Product[] = [
         {
             id: 1,
@@ -253,10 +476,8 @@ const ShopPage: React.FC<{
         }
     ];
 
-    const cartTotal = cart.reduce((total, item) => total + item.price, 0);
-
     return (
-        <div className="relative">
+        <div>
              <div className="text-center p-6">
                 <h1 className="text-3xl font-bold text-gray-800">Memorial Shop</h1>
                 <p className="text-gray-500 mt-2">Cherish precious memories with our curated products</p>
@@ -284,45 +505,6 @@ const ShopPage: React.FC<{
                         </div>
                     </div>
                 ))}
-            </div>
-
-            {isCartOpen && (
-                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsCartOpen(false)}></div>
-            )}
-            <div className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="flex flex-col h-full">
-                    <div className="flex justify-between items-center p-4 border-b">
-                        <h2 className="text-xl font-bold">Your Cart</h2>
-                        <button onClick={() => setIsCartOpen(false)}>
-                            <XIcon className="w-6 h-6 text-gray-500" />
-                        </button>
-                    </div>
-                    {cart.length === 0 ? (
-                        <p className="text-gray-500 text-center py-8 flex-grow flex items-center justify-center">Your cart is empty.</p>
-                    ) : (
-                        <div className="p-4 space-y-3 flex-grow overflow-y-auto">
-                            {cart.map((item, index) => (
-                                <div key={`${item.id}-${index}`} className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-semibold">{item.name}</p>
-                                        <p className="text-sm text-gray-500">${item.price.toFixed(2)}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {cart.length > 0 && (
-                        <div className="p-4 border-t">
-                            <div className="flex justify-between items-center font-bold text-lg">
-                                <span>Total</span>
-                                <span>${cartTotal.toFixed(2)}</span>
-                            </div>
-                            <button className="w-full mt-4 bg-purple-600 text-white font-bold py-3 rounded-xl">
-                                Checkout
-                            </button>
-                        </div>
-                    )}
-                </div>
             </div>
         </div>
     );
@@ -928,7 +1110,7 @@ const AboutUsPage: React.FC = () => {
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
             <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">About Us</h1>
             <p className="text-gray-600 leading-relaxed mb-4">
-                Founded with a deep love for animals, Pet Memorial Services is dedicated to providing compassionate and professional end-of-life care for beloved pets. We understand that pets are family, and their loss is a profound experience. Our mission is to honor their memory with dignity and respect, while supporting pet owners through their time of grief.
+                Founded with a deep love for animals, Petner is dedicated to providing compassionate and professional end-of-life care for beloved pets. We understand that pets are family, and their loss is a profound experience. Our mission is to honor their memory with dignity and respect, while supporting pet owners through their time of grief.
             </p>
              <p className="text-gray-600 leading-relaxed mb-4">
                 Our team consists of caring professionals who are committed to creating a peaceful and comforting farewell. We offer a range of services, from individual cremation to personalized memorials, all designed to celebrate the unique bond you shared with your companion.
@@ -944,6 +1126,7 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [activePage, setActivePage] = React.useState<Page>('Home');
   const [pageData, setPageData] = React.useState<any>(null);
+  const [history, setHistory] = React.useState<{ page: Page; data: any }[]>([]);
 
   const [posts, setPosts] = React.useState<Post[]>([
     { id: 1, emoji: "🌈", title: "Crossed the rainbow bridge today. Miss you, buddy.", user: "Sarah", likes: 12, avatar: "https://i.pravatar.cc/150?u=sarah", comments: [] },
@@ -989,14 +1172,34 @@ const App: React.FC = () => {
   const currentUser = { name: "Jessica Smith", id: "U-182374", avatar: "https://i.pravatar.cc/150?u=jessica" };
 
   const handlePageChange = (page: Page, data: any = null) => {
+    if (activePage === page) return;
+    setHistory(prev => [...prev, { page: activePage, data: pageData }]);
     setActivePage(page);
     setPageData(data);
     window.scrollTo(0, 0);
   };
   
+  const handleGlobalBack = () => {
+    if (history.length > 0) {
+        const lastState = history[history.length - 1];
+        setHistory(prev => prev.slice(0, -1));
+        setActivePage(lastState.page);
+        setPageData(lastState.data);
+    } else {
+        if (activePage !== 'Home') {
+            setActivePage('Home');
+            setPageData(null);
+        }
+    }
+  };
+
   if (!isLoggedIn) {
       return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
   }
+  
+  const handleRemoveFromCart = (indexToRemove: number) => {
+    setCart(currentCart => currentCart.filter((_, index) => index !== indexToRemove));
+  };
   
   const handleLike = (postId: number) => {
     setPosts(posts.map(p => p.id === postId ? { ...p, likes: p.likes + 1 } : p));
@@ -1023,7 +1226,7 @@ const App: React.FC = () => {
         comments: [],
     };
     setPosts([newPost, ...posts]);
-    setActivePage('Community');
+    handlePageChange('Community');
   };
 
   const handleSaveMemorial = (newMemorialData: Omit<Memorial, 'id'>) => {
@@ -1032,14 +1235,14 @@ const App: React.FC = () => {
       ...newMemorialData
     };
     setMemorials([newMemorial, ...memorials]);
-    setActivePage('Memorials');
+    handlePageChange('Memorials');
   };
   
   const renderPage = () => {
     switch(activePage) {
       case 'Home': return <HomePage setActivePage={handlePageChange} />;
-      case 'Services': return <ServicesPage />;
-      case 'Shop': return <ShopPage onAddToCart={(p) => setCart([...cart, p])} cart={cart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen}/>;
+      case 'Services': return <ServicesPage setActivePage={handlePageChange} />;
+      case 'Shop': return <ShopPage onAddToCart={(p) => { setCart([...cart, p]); setIsCartOpen(true); }} />;
       case 'Community': return <CommunityPage setActivePage={handlePageChange} posts={posts} onPostSelect={(post) => handlePageChange('PostDetail', { post })} />;
       case 'Profile': return <ProfilePage setActivePage={handlePageChange} user={currentUser} />;
       case 'Upload': return <UploadPage setActivePage={handlePageChange} onPublish={handlePublishPost} />;
@@ -1053,14 +1256,38 @@ const App: React.FC = () => {
       case 'MemorialDetail': return <MemorialDetailPage memorial={pageData?.memorial} onBack={() => handlePageChange('Memorials')} />;
       case 'CreateMemorial': return <CreateMemorialPage onSave={handleSaveMemorial} onCancel={() => handlePageChange('Memorials')} />;
       case 'AboutUs': return <AboutUsPage />;
+      case 'ServiceDetail': 
+        return <ServiceDetailPage 
+            service={pageData?.service} 
+            onBack={() => handlePageChange('Services')} 
+            onAddToCart={(product) => {
+                setCart(currentCart => [...currentCart, product]);
+                setIsCartOpen(true);
+            }}
+        />;
       default: return <HomePage setActivePage={handlePageChange} />;
     }
   };
 
   return (
     <div className="font-sans">
-      <Header activePage={activePage} setActivePage={setActivePage} cartItemCount={cart.length} onCartClick={() => setIsCartOpen(true)} />
+      <Header activePage={activePage} setActivePage={handlePageChange} cartItemCount={cart.length} onCartClick={() => setIsCartOpen(true)} />
+      <CartSidebar 
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        onRemoveFromCart={handleRemoveFromCart}
+      />
       <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
+        {activePage !== 'Home' && (
+            <button 
+                onClick={handleGlobalBack} 
+                className="flex items-center text-gray-600 hover:text-purple-600 font-semibold mb-4 transition-colors"
+            >
+                <ArrowLeftIcon className="w-5 h-5 mr-1" />
+                Back
+            </button>
+        )}
         {renderPage()}
       </main>
     </div>

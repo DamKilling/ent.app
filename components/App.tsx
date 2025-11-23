@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { Page, Post, Comment, Product, Memorial } from '../types';
 import Header from './BottomNav';
@@ -7,7 +6,7 @@ import {
   CalendarIcon, PawIcon, LocationPinIcon, HeartIcon, InfoIcon, UsersIcon, CheckCircleIcon, DiamondIcon, UrnIcon, CandleIcon,
   ShoppingCartIcon, SearchIcon, PlusIcon, ChevronRightIcon, CreditCardIcon, ClockIcon, RefreshCwIcon, StoreIcon, FileTextIcon,
   BriefcaseIcon, BellIcon, SettingsIcon, GridIcon, LogOutIcon, ImageIcon, XIcon, TagIcon, SparklesIcon, EllipsisHorizontalIcon,
-  ArrowLeftIcon, MessageCircleIcon, ShareIcon, SendIcon, TrashIcon
+  ArrowLeftIcon, MessageCircleIcon, ShareIcon, SendIcon, HomeIcon, TrashIcon
 } from './Icons';
 
 // Page Components defined in the same file to keep file count low.
@@ -70,7 +69,7 @@ const HomePage: React.FC<{ setActivePage: (page: Page) => void }> = ({ setActive
   return (
     <div>
       <div className="p-6 md:p-10 bg-gradient-to-b from-purple-200 via-fuchsia-100 to-transparent rounded-lg">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Pet Memorial Services</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Petner</h1>
         <p className="text-gray-500 mt-2">Honoring the unconditional love they gave us</p>
       </div>
 
@@ -309,7 +308,7 @@ const ServiceDetailPage: React.FC<{
                                <div>
                                   <h3 className="font-semibold">{option.name}</h3>
                                   <p className="text-sm text-gray-500">{option.desc}</p>
-                               </div>
+                                </div>
                                <span className="font-semibold text-gray-700 ml-4 whitespace-nowrap">
                                   {option.price > 0 ? `+$${option.price}` : 'Included'}
                                </span>
@@ -328,7 +327,7 @@ const ServiceDetailPage: React.FC<{
                                <div>
                                   <h3 className="font-semibold">{option.name}</h3>
                                   <p className="text-sm text-gray-500">{option.desc}</p>
-                               </div>
+                                </div>
                                <span className="font-semibold text-gray-700 ml-4 whitespace-nowrap">
                                   {option.price > 0 ? `+$${option.price}` : 'Included'}
                                </span>
@@ -1066,6 +1065,7 @@ const CreateMemorialPage: React.FC<{
       ...formData,
       petAvatar: 'https://i.pravatar.cc/300?u=mittens', // Placeholder
       photos: ['https://placedog.net/500/500?id=1', 'https://placedog.net/500/500?id=2', 'https://placedog.net/500/500?id=3'], // Placeholder
+      // Fix: Add missing candles and tributes properties to conform to the Memorial type
       candles: 0,
       tributes: [],
     });
@@ -1111,7 +1111,7 @@ const AboutUsPage: React.FC = () => {
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
             <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">About Us</h1>
             <p className="text-gray-600 leading-relaxed mb-4">
-                Founded with a deep love for animals, Pet Memorial Services is dedicated to providing compassionate and professional end-of-life care for beloved pets. We understand that pets are family, and their loss is a profound experience. Our mission is to honor their memory with dignity and respect, while supporting pet owners through their time of grief.
+                Founded with a deep love for animals, Petner is dedicated to providing compassionate and professional end-of-life care for beloved pets. We understand that pets are family, and their loss is a profound experience. Our mission is to honor their memory with dignity and respect, while supporting pet owners through their time of grief.
             </p>
              <p className="text-gray-600 leading-relaxed mb-4">
                 Our team consists of caring professionals who are committed to creating a peaceful and comforting farewell. We offer a range of services, from individual cremation to personalized memorials, all designed to celebrate the unique bond you shared with your companion.
@@ -1127,6 +1127,7 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [activePage, setActivePage] = React.useState<Page>('Home');
   const [pageData, setPageData] = React.useState<any>(null);
+  const [history, setHistory] = React.useState<{ page: Page; data: any }[]>([]);
 
   const [posts, setPosts] = React.useState<Post[]>([
     { id: 1, emoji: "🌈", title: "Crossed the rainbow bridge today. Miss you, buddy.", user: "Sarah", likes: 12, avatar: "https://i.pravatar.cc/150?u=sarah", comments: [] },
@@ -1147,6 +1148,7 @@ const App: React.FC = () => {
       favoriteToys: 'Squeaky squirrel, tennis balls',
       stories: 'Buddy was the most loyal friend anyone could ask for. He loved long walks in the park and chasing squirrels. His favorite spot was right by the fireplace on a cold evening. We miss his gentle presence every day.',
       photos: ['https://placedog.net/500/500?id=10', 'https://placedog.net/500/500?id=11', 'https://placedog.net/500/500?id=12'],
+      // Fix: Add missing candles and tributes properties to conform to the Memorial type
       candles: 0,
       tributes: [],
     },
@@ -1159,6 +1161,7 @@ const App: React.FC = () => {
       favoriteToys: 'Laser pointer, catnip mice',
       stories: 'Mittens had the loudest purr and the softest fur. She ruled the house with an iron paw, but was a total sweetheart when she wanted to be. Napping in sunbeams was her favorite pastime.',
       photos: ['https://loremflickr.com/500/500/cat?lock=20', 'https://loremflickr.com/500/500/cat?lock=21', 'https://loremflickr.com/500/500/cat?lock=22'],
+      // Fix: Add missing candles and tributes properties to conform to the Memorial type
       candles: 0,
       tributes: [],
     }
@@ -1170,11 +1173,27 @@ const App: React.FC = () => {
   const currentUser = { name: "Jessica Smith", id: "U-182374", avatar: "https://i.pravatar.cc/150?u=jessica" };
 
   const handlePageChange = (page: Page, data: any = null) => {
+    if (activePage === page) return;
+    setHistory(prev => [...prev, { page: activePage, data: pageData }]);
     setActivePage(page);
     setPageData(data);
     window.scrollTo(0, 0);
   };
   
+  const handleGlobalBack = () => {
+    if (history.length > 0) {
+        const lastState = history[history.length - 1];
+        setHistory(prev => prev.slice(0, -1));
+        setActivePage(lastState.page);
+        setPageData(lastState.data);
+    } else {
+        if (activePage !== 'Home') {
+            setActivePage('Home');
+            setPageData(null);
+        }
+    }
+  };
+
   if (!isLoggedIn) {
       return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
   }
@@ -1208,7 +1227,7 @@ const App: React.FC = () => {
         comments: [],
     };
     setPosts([newPost, ...posts]);
-    setActivePage('Community');
+    handlePageChange('Community');
   };
 
   const handleSaveMemorial = (newMemorialData: Omit<Memorial, 'id'>) => {
@@ -1217,18 +1236,20 @@ const App: React.FC = () => {
       ...newMemorialData
     };
     setMemorials([newMemorial, ...memorials]);
-    setActivePage('Memorials');
+    handlePageChange('Memorials');
   };
   
   const renderPage = () => {
     switch(activePage) {
       case 'Home': return <HomePage setActivePage={handlePageChange} />;
       case 'Services': return <ServicesPage setActivePage={handlePageChange} />;
-      case 'Shop': return <ShopPage onAddToCart={(p) => setCart([...cart, p])} />;
+      case 'Shop': return <ShopPage onAddToCart={(p) => { setCart([...cart, p]); setIsCartOpen(true); }} />;
       case 'Community': return <CommunityPage setActivePage={handlePageChange} posts={posts} onPostSelect={(post) => handlePageChange('PostDetail', { post })} />;
       case 'Profile': return <ProfilePage setActivePage={handlePageChange} user={currentUser} />;
       case 'Upload': return <UploadPage setActivePage={handlePageChange} onPublish={handlePublishPost} />;
       case 'PostDetail':
+        // Fix: Use find to get the live post object instead of relying on stale pageData.post
+        // This ensures that likes and comments are updated immediately in the UI
         const currentPost = posts.find(p => p.id === pageData?.post?.id);
         return <PostDetailPage post={currentPost || pageData?.post} onBack={() => handlePageChange('Community')} onLike={handleLike} onAddComment={handleAddComment} />;
       case 'PetAICompanion': return <PetAICompanionPage setActivePage={handlePageChange} />;
@@ -1251,7 +1272,7 @@ const App: React.FC = () => {
 
   return (
     <div className="font-sans">
-      <Header activePage={activePage} setActivePage={setActivePage} cartItemCount={cart.length} onCartClick={() => setIsCartOpen(true)} />
+      <Header activePage={activePage} setActivePage={handlePageChange} cartItemCount={cart.length} onCartClick={() => setIsCartOpen(true)} />
       <CartSidebar 
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -1259,6 +1280,15 @@ const App: React.FC = () => {
         onRemoveFromCart={handleRemoveFromCart}
       />
       <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
+        {activePage !== 'Home' && (
+            <button 
+                onClick={handleGlobalBack} 
+                className="flex items-center text-gray-600 hover:text-purple-600 font-semibold mb-4 transition-colors"
+            >
+                <ArrowLeftIcon className="w-5 h-5 mr-1" />
+                Back
+            </button>
+        )}
         {renderPage()}
       </main>
     </div>
