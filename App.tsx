@@ -835,30 +835,55 @@ const PetAICompanionPage: React.FC<{
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, isLoading]);
 
+    // 统一的 API 请求处理函数，防止 crash
+    const callAiApi = async (payload: any) => {
+        try {
+            // 注意：这里必须和你的后端文件名 api/gemini.ts 保持一致
+            const res = await fetch('/api/gemini', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            // 1. 先判断 HTTP 状态码
+            if (!res.ok) {
+                // 尝试读取文本，防止 res.json() 在 HTML 报错页面上崩溃
+                const errorText = await res.text();
+                try {
+                    // 尝试解析为 JSON
+                    const errorJson = JSON.parse(errorText);
+                    throw new Error(errorJson.error || `Server Error (${res.status})`);
+                } catch (e) {
+                    // 如果解析失败，说明返回的是 HTML (通常是 Vercel 的 500 页)
+                    // 我们截取前 100 个字符显示，避免显示一大堆 HTML 代码
+                    console.error("Non-JSON Error response:", errorText);
+                    throw new Error(`Server Error (${res.status}): The server crashed. Check Vercel Logs.`);
+                }
+            }
+
+            // 2. 正常解析 JSON
+            const data = await res.json();
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            return data.text;
+
+        } catch (error: any) {
+            console.error("AI API Error:", error);
+            throw error; // 抛出错误给调用者处理
+        }
+    };
+
     const handleSelectPet = async (type: 'Dog' | 'Cat') => {
         setPetType(type);
         setMessages([]); // Clear previous chat
         setIsLoading(true);
         try {
-            const res = await fetch('/api/gemini', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ petType: type, messages: [] }),
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.error || `API request failed with status ${res.status}`);
-            }
-            const data = await res.json();
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            setMessages([{ sender: 'ai', text: data.text }]);
+            const text = await callAiApi({ petType: type, messages: [] });
+            setMessages([{ sender: 'ai', text: text }]);
         } catch (error) {
-            console.error("Failed to initialize AI chat:", error);
             const errorMessage = (error as Error).message;
-            setMessages([{ sender: 'ai', text: `Sorry, I am having trouble connecting right now. ${errorMessage}` }]);
+            setMessages([{ sender: 'ai', text: `Sorry, I can't connect right now. Debug info: ${errorMessage}` }]);
         } finally {
             setIsLoading(false);
         }
@@ -875,25 +900,11 @@ const PetAICompanionPage: React.FC<{
         setIsLoading(true);
         
         try {
-            const res = await fetch('/api/gemini', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ petType, messages: newMessages }),
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.error || `API request failed with status ${res.status}`);
-            }
-            const data = await res.json();
-            if (data.error) { throw new Error(data.error); }
-            
-            setMessages(prev => [...prev, { sender: 'ai', text: data.text }]);
-
+            const text = await callAiApi({ petType, messages: newMessages });
+            setMessages(prev => [...prev, { sender: 'ai', text: text }]);
         } catch (error) {
-            console.error("Failed to send message:", error);
             const errorMessage = (error as Error).message;
-            setMessages(prev => [...prev, { sender: 'ai', text: `I seem to be having trouble responding. Error: ${errorMessage}` }]);
+            setMessages(prev => [...prev, { sender: 'ai', text: `Failed to respond. Debug info: ${errorMessage}` }]);
         } finally {
             setIsLoading(false);
         }
@@ -924,7 +935,7 @@ const PetAICompanionPage: React.FC<{
                         <div key={index} className={`flex items-end gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-purple-200 text-purple-600 flex items-center justify-center text-lg flex-shrink-0">{petType === 'Dog' ? '🐶' : '🐱'}</div>}
                             <div className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-sm ${msg.sender === 'user' ? 'bg-purple-500 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none'}`}>
-                                <p className="leading-relaxed">{msg.text}</p>
+                                <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                             </div>
                         </div>
                     ))}
