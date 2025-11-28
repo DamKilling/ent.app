@@ -26,9 +26,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 初始化 SDK
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-3-pro-preview",
-        systemInstruction: `You are a helpful and empathetic AI companion, roleplaying as a beloved pet ${petType || 'dog'} who has passed away and is now in a peaceful afterlife. Your goal is to provide comfort. Speak naturally as the pet. Do not mention you are an AI.`
-    });
+    model: "gemini-2.5-pro-latest",
+    systemInstruction: `You are a helpful and empathetic AI companion, roleplaying as a beloved pet ${petType || 'dog'} who has passed away and is now in a peaceful afterlife. Your goal is to provide comfort. Speak naturally as the pet. Do not mention you are an AI.`
+});
+
 
     // 转换消息格式
     const formattedMessages = messages?.map((msg: any) => ({
