@@ -69,7 +69,7 @@ const HomePage: React.FC<{ setActivePage: (page: Page) => void }> = ({ setActive
   return (
     <div>
       <div className="p-6 md:p-10 bg-gradient-to-b from-purple-200 via-fuchsia-100 to-transparent rounded-lg">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Petner</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Pet Memorial Services</h1>
         <p className="text-gray-500 mt-2">Honoring the unconditional love they gave us</p>
       </div>
 
@@ -1111,7 +1111,7 @@ const AboutUsPage: React.FC = () => {
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
             <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">About Us</h1>
             <p className="text-gray-600 leading-relaxed mb-4">
-                Founded with a deep love for animals, Petner is dedicated to providing compassionate and professional end-of-life care for beloved pets. We understand that pets are family, and their loss is a profound experience. Our mission is to honor their memory with dignity and respect, while supporting pet owners through their time of grief.
+                Founded with a deep love for animals, Pet Memorial Services is dedicated to providing compassionate and professional end-of-life care for beloved pets. We understand that pets are family, and their loss is a profound experience. Our mission is to honor their memory with dignity and respect, while supporting pet owners through their time of grief.
             </p>
              <p className="text-gray-600 leading-relaxed mb-4">
                 Our team consists of caring professionals who are committed to creating a peaceful and comforting farewell. We offer a range of services, from individual cremation to personalized memorials, all designed to celebrate the unique bond you shared with your companion.
@@ -1243,7 +1243,7 @@ const App: React.FC = () => {
     switch(activePage) {
       case 'Home': return <HomePage setActivePage={handlePageChange} />;
       case 'Services': return <ServicesPage setActivePage={handlePageChange} />;
-      case 'Shop': return <ShopPage onAddToCart={(p) => { setCart([...cart, p]); setIsCartOpen(true); }} />;
+      case 'Shop': return <ShopPage onAddToCart={(p) => setCart([...cart, p])} />;
       case 'Community': return <CommunityPage setActivePage={handlePageChange} posts={posts} onPostSelect={(post) => handlePageChange('PostDetail', { post })} />;
       case 'Profile': return <ProfilePage setActivePage={handlePageChange} user={currentUser} />;
       case 'Upload': return <UploadPage setActivePage={handlePageChange} onPublish={handlePublishPost} />;

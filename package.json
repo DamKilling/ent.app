@@ -1,16 +1,16 @@
 {
-  "name": "pet-memorial-services",
+  "name": "petner",
   "version": "1.0.0",
-  "description": "A compassionate one-stop service platform for pet owners, providing professional, transparent, and convenient memorial services and emotional support.",
+  "description": "A compassionate one-stop service platform for pet owners.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build"
   },
   "dependencies": {
-    "@google/genai": "^1.27.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "@google/generative-ai": "^0.21.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

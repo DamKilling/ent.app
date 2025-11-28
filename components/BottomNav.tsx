@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({ activePage, setActivePage, cartItemCoun
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <PawIcon className="w-8 h-8 text-purple-600 mr-2" />
-            <span className="text-xl font-bold text-gray-800">Petner</span>
+            <span className="text-xl font-bold text-gray-800">Pet Memorial</span>
           </div>
           <div className="hidden md:flex items-center space-x-4">
              {navItems.map((item) => <NavLink key={item.label} item={item} /> )}
