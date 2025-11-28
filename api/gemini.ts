@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { GoogleGenerativeAI } from '@google/generative-ai'; // 必须是这个新库
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 1. 设置跨域头
@@ -25,17 +25,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     // 初始化 SDK
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // 确保是 1.5-flash
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: `You are a helpful and empathetic AI companion, roleplaying as a beloved pet ${petType || 'dog'} who has passed away and is now in a peaceful afterlife. Your goal is to provide comfort. Speak naturally as the pet. Do not mention you are an AI.`
+    });
 
-    const history = messages?.map((msg: any) => ({
+    // 转换消息格式
+    const formattedMessages = messages?.map((msg: any) => ({
       role: msg.sender === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }],
     })) || [];
 
-    const chat = model.startChat({ history: history.slice(0, -1) });
-    const lastMessage = history[history.length - 1]?.parts[0]?.text || "Hello";
+    // ==========================================
+    // 🛠️ 关键修复开始：处理历史记录规则
+    // ==========================================
     
-    const result = await chat.sendMessage(lastMessage);
+    // 1. 提取最后一条消息（这是当前用户发的新消息）
+    const lastMessage = formattedMessages[formattedMessages.length - 1];
+    const lastMessageText = lastMessage?.parts[0]?.text || "Hello";
+
+    // 2. 提取历史记录（除了最后一条之外的所有消息）
+    let history = formattedMessages.slice(0, -1);
+
+    // 3. 🚨 修复报错的核心逻辑：
+    // Google 要求 history 的第一条必须是 'user'。
+    // 如果前端发来的第一条是 'model' (比如 AI 的开场白)，我们必须把它删掉。
+    if (history.length > 0 && history[0].role === 'model') {
+        console.log("Removing initial model message to satisfy API requirements");
+        history.shift(); // 删掉第一条 AI 消息
+    }
+
+    // ==========================================
+    // 🛠️ 关键修复结束
+    // ==========================================
+
+    const chat = model.startChat({ history: history });
+    
+    const result = await chat.sendMessage(lastMessageText);
     const response = await result.response;
     const text = response.text();
 
@@ -43,6 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error: any) {
     console.error('Error:', error);
+    // 返回 JSON 格式的错误，方便前端解析
     return res.status(500).json({ error: error.message });
   }
 }
