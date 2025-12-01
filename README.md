@@ -17,7 +17,7 @@ This project is built using modern web technologies to ensure high performance a
 - **Frontend Framework:** [React](https://react.dev/)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **Build Tool:** [Vite](https://vitejs.dev/)
-- **AI Integration:** [Google Gemini API](https://ai.google.dev/) (For Pet Memorial AI Companion)
+- **AI Integration:** [Deepseek API](https://ai.google.dev/) (For Pet Memorial AI Companion)
 - **Deployment:** [Vercel](https://vercel.com/)
 
 ---
