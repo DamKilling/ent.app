@@ -5,62 +5,62 @@
 ## 🔗 Live Demo & Repository
 
 - **Live Demo:** [https://ent-app-c8of.vercel.app/](https://ent-app-c8of.vercel.app/)
-  > **⚠️ Note:** A **VPN** might be required to access the live demo depending on your network region.
+  > **⚠️ Note:** Depending on your network region, a **VPN** might be required to access the live demo (hosted on Vercel).
 - **GitHub Repository:** [https://github.com/DamKilling/ent.app](https://github.com/DamKilling/ent.app)
-- ![Uploading image.png…]()
 
+---
+
+## 🛠️ Tech Stack
+
+This project is built using modern web technologies to ensure high performance and type safety:
+
+- **Frontend Framework:** [React](https://react.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **AI Integration:** [Google Gemini API](https://ai.google.dev/) (For Pet Memorial AI Companion)
+- **Deployment:** [Vercel](https://vercel.com/)
 
 ---
 
 ## 📱 Application Overview
 
-Petner offers a clean and soothing interface with five core modules accessible via the top navigation bar. It is designed to help pet owners navigate difficult times with dignity and ease.
+Petner offers a clean and soothing interface with five core modules accessible via the top navigation bar.
 
 ### 🌟 Key Features
 
 #### 1. Home 🏠
 The central hub for all services.
-- **Service Guide:** Quick access to "Quick Booking" for packages and "Afterlife Process" to understand cremation and ceremonies.
-- **Shortcuts:** Store Booking (Find nearby locations), Memorials, About Us, and Partnerships.
+- **Service Guide:** Quick access to "Quick Booking" and "Afterlife Process".
+- **Shortcuts:** Store Booking, Memorials, About Us, and Partnerships.
 
 #### 2. Services 🕯️
 Professional aftercare planning.
-- View detailed processes for pet cremation, memorial ceremonies, and urn storage.
-- **Online Booking:** Select packages (e.g., Basic Farewell, Premium Memorial) and customize services.
-- Transparent pricing and service details.
+- View detailed processes for cremation and ceremonies.
+- **Online Booking:** Customize packages (e.g., Basic Farewell, Premium Memorial).
 
 #### 3. Shop 🛍️
 Cherish precious memories with curated products.
-- Browse and purchase pet memorials (Urns, pendants, keepsakes).
-- Complete shopping cart system with "Add to Cart" and checkout functionality.
-- Multiple payment method support.
+- Browse pet memorials (Urns, pendants).
+- Full shopping cart and checkout functionality.
 
 #### 4. Community 💬
 Share memories and find support.
-- **Social Feed:** Browse posts via "Follow", "Discover", and "Nearby" tabs.
-- **Interact:** Share photos/text about your beloved pet, like and comment on other posts to support the community.
+- **Social Feed:** "Follow", "Discover", and "Nearby" tabs.
+- **Interact:** Post photos/text, like, and comment to support others.
 
 #### 5. Profile & AI Companion 👤
 Personalized management and emotional support.
-- **Order Management:** Track status (Pending Payment, In Service, etc.).
-- **Pet Memorial AI Model:** A unique feature providing emotional companionship. Chat with an AI representation of your beloved pet to relive memories and find comfort.
-- **Tools:** Access invoices, settings, and credentials.
+- **Order Management:** Track service status.
+- **Pet Memorial AI Model:** Powered by **Google Gemini**, this feature allows users to chat with an AI representation of their beloved pet for emotional comfort.
 
 ---
 
-## 🎨 UI/UX Highlights
+## 📂 Project Structure
 
-- **Clean Aesthetic:** Fresh and simple design to provide a calming user experience.
-- **Purple Accents:** Key actions (like "Learn More", "Checkout", "New Post") are highlighted in purple for easy navigation.
-- **Top Navigation:** Consistent navigation bar across all pages for quick module switching.
-
----
-
-## 🛠️ Getting Started (Local Development)
-
-To run this project locally, follow these steps:
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/DamKilling/ent.app.git
-   cd ent.app
+```text
+├── api/                # API integrations (e.g., Gemini AI)
+├── components/         # Reusable UI components
+├── App.tsx             # Main application component
+├── index.tsx           # Entry point
+├── vite.config.ts      # Vite configuration
+└── vercel.json         # Vercel deployment settings
